@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "bmewburn.vscode-intelephense-client",
+    "ritwickdey.liveserver",
+    "mblode.twig-language-2",
+    "formulahendry.auto-rename-tag",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-vscode.live-server",
+    "rangav.vscode-thunder-client"
+  ]
+}

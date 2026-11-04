@@ -1,0 +1,17 @@
+{
+  "editor.fontSize": 14,
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.wordWrap": "on",
+  "files.associations": {
+    "*.php": "php"
+  },
+  "emmet.includeLanguages": {
+    "php": "html"
+  },
+  "php.validate.enable": true,
+  "liveServer.settings.port": 5501,
+  "[php]": {
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+  }
+}
