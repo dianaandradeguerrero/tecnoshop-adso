@@ -306,6 +306,21 @@ function clientesApp() {
 
 // ══════════════════════════════════════════════════════
 // VENTAS
+/**
+ * Ejecuta una consulta a la API y devuelve los datos JSON.
+ * @param {string} url - Dirección del servicio solicitado.
+ * @returns {Promise<Object>} Respuesta recibida del servidor.
+ */
+async function consultarApi(url) {
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("No fue posible completar la consulta.");
+  }
+
+  return await response.json();
+}
+
 // ══════════════════════════════════════════════════════
 
 function ventasApp() {
@@ -333,13 +348,9 @@ function ventasApp() {
       this.cargando = true;
 
       try {
-        const res = await fetch(`${API}?modulo=ventas&accion=obtenerTodos`);
-
-        if (!res.ok) {
-          throw new Error("No fue posible consultar las ventas.");
-        }
-
-        const json = await res.json();
+        const json = await consultarApi(
+          `${API}?modulo=ventas&accion=obtenerTodos`,
+        );
 
         if (!json.ok) {
           throw new Error(json.mensaje || "Error al cargar las ventas.");
@@ -349,11 +360,7 @@ function ventasApp() {
       } catch (e) {
         console.error("Error al cargar ventas:", e);
         this.ventas = [];
-        crearAlerta(
-          this,
-          e.message || "Error de conexión al cargar las ventas.",
-          "danger",
-        );
+        crearAlerta(this, e.message, "danger");
       } finally {
         this.cargando = false;
       }
@@ -363,13 +370,9 @@ function ventasApp() {
       this.cargandoClientes = true;
 
       try {
-        const res = await fetch(`${API}?modulo=clientes&accion=obtenerTodos`);
-
-        if (!res.ok) {
-          throw new Error("No fue posible consultar los clientes.");
-        }
-
-        const json = await res.json();
+        const json = await consultarApi(
+          `${API}?modulo=clientes&accion=obtenerTodos`,
+        );
 
         if (!json.ok) {
           throw new Error(json.mensaje || "Error al cargar los clientes.");
