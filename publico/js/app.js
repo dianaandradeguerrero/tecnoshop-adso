@@ -6,6 +6,15 @@
 
 const API_URL = "/tecnoshop_vscode/index.php";
 /** Helper para mostrar alertas */
+
+/**
+ * Muestra una alerta temporal en la interfaz.
+ * @param {Object} ctx - Contexto del componente que recibe la alerta.
+ * @param {string} mensaje - Texto que se mostrará al usuario.
+ * @param {string} tipo - Tipo de alerta: success, danger o warning.
+ * @returns {void} No devuelve ningún valor.
+ */
+
 function crearAlerta(ctx, mensaje, tipo = "success") {
   ctx.mensaje = mensaje;
   ctx.tipoMsg = tipo;
@@ -157,6 +166,12 @@ function productosApp() {
         crearAlerta(this, "Error al eliminar.", "danger");
       }
     },
+
+    /**
+     * Envía una solicitud para eliminar un producto.
+     * @param {number|string} id - Identificador del producto que se eliminará.
+     * @returns {Promise<Object>} Respuesta JSON del servidor.
+     */
 
     async eliminarProducto(id) {
       const res = await fetch(
@@ -310,6 +325,12 @@ function clientesApp() {
  * @param {string} url - Dirección del servicio solicitado.
  * @returns {Promise<Object>} Respuesta recibida del servidor.
  */
+/**
+ * Realiza una petición HTTP y procesa la respuesta JSON.
+ * @param {string} url - Dirección del servicio solicitado.
+ * @returns {Promise<Object>} Datos JSON recibidos del servidor.
+ */
+
 async function consultarApi(url) {
   const response = await fetch(url);
 
