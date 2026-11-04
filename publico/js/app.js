@@ -4,8 +4,7 @@
  * TecnoShop · SENA ADSO · Juan Carlos Huertas Niño · 2026
  */
 
-var API = "/tecnoshop_vscode/index.php";
-
+const API_URL = "/tecnoshop_vscode/index.php";
 /** Helper para mostrar alertas */
 function crearAlerta(ctx, mensaje, tipo = "success") {
   ctx.mensaje = mensaje;
