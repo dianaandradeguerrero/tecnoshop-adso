@@ -83,17 +83,13 @@ $baseUrl = '/tecnoshop_vscode/';
         $titulos = [
           'dashboard' => '📊 Dashboard + IA',
           'productos' => '📦 Gestión de Productos',
-          'clientes'  => '👥 Clientes + IA 🤖',
-          'ventas'    => '🧾 Gestión de Ventas',
-          'reportes'  => '📈 Reportes del Sistema',
-          'ia'        => '🤖 Inteligencia Artificial',
+          'clientes' => '👥 Clientes + IA 🤖',
+          'ventas' => '🧾 Gestión de Ventas',
+          'reportes' => '📈 Reportes del Sistema',
+          'ia' => '🤖 Inteligencia Artificial',
         ];
 
-        echo htmlspecialchars(
-          $titulos[$moduloActivo] ?? 'TecnoShop',
-          ENT_QUOTES,
-          'UTF-8'
-        );
+        echo htmlspecialchars($titulos[$moduloActivo] ?? 'TecnoShop', ENT_QUOTES, 'UTF-8');
         ?>
       </h1>
 

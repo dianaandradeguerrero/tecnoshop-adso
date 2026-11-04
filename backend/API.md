@@ -34,8 +34,8 @@ Content-Type: application/json
 
 ```json
 {
-    "email": "ana@correo.com",
-    "password": "123456"
+  "email": "ana@correo.com",
+  "password": "123456"
 }
 ```
 
@@ -45,14 +45,14 @@ Content-Type: application/json
 
 ```json
 {
-    "token": "eyJhbGciOiJIUzI1NiIs...",
-    "user": {
-        "id": 1,
-        "nombre": "Ana Sofía Gómez",
-        "email": "ana@correo.com",
-        "telefono": "3001234567",
-        "documento": "1098765432"
-    }
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "user": {
+    "id": 1,
+    "nombre": "Ana Sofía Gómez",
+    "email": "ana@correo.com",
+    "telefono": "3001234567",
+    "documento": "1098765432"
+  }
 }
 ```
 
@@ -62,8 +62,8 @@ Content-Type: application/json
 
 ```json
 {
-    "error": true,
-    "message": "Email y contraseña son obligatorios"
+  "error": true,
+  "message": "Email y contraseña son obligatorios"
 }
 ```
 
@@ -71,8 +71,8 @@ Content-Type: application/json
 
 ```json
 {
-    "error": true,
-    "message": "Email o contraseña incorrectos"
+  "error": true,
+  "message": "Email o contraseña incorrectos"
 }
 ```
 
@@ -80,8 +80,8 @@ Content-Type: application/json
 
 ```json
 {
-    "error": true,
-    "message": "Error interno del servidor"
+  "error": true,
+  "message": "Error interno del servidor"
 }
 ```
 
@@ -125,19 +125,19 @@ No requiere body.
 
 ```json
 {
-    "mensaje": "Listado de productos",
-    "datos": [
-        {
-            "id": 1,
-            "nombre": "Samsung Galaxy A55",
-            "descripcion": "Pantalla AMOLED 6.6 pulgadas",
-            "categoria_id": 1,
-            "precio": "2299000.00",
-            "stock": 12,
-            "marca": "Samsung",
-            "estado": "activo"
-        }
-    ]
+  "mensaje": "Listado de productos",
+  "datos": [
+    {
+      "id": 1,
+      "nombre": "Samsung Galaxy A55",
+      "descripcion": "Pantalla AMOLED 6.6 pulgadas",
+      "categoria_id": 1,
+      "precio": "2299000.00",
+      "stock": 12,
+      "marca": "Samsung",
+      "estado": "activo"
+    }
+  ]
 }
 ```
 
@@ -147,8 +147,8 @@ No requiere body.
 
 ```json
 {
-    "error": true,
-    "message": "Token no proporcionado"
+  "error": true,
+  "message": "Token no proporcionado"
 }
 ```
 
@@ -156,8 +156,8 @@ No requiere body.
 
 ```json
 {
-    "error": true,
-    "message": "Error al consultar los productos"
+  "error": true,
+  "message": "Error al consultar los productos"
 }
 ```
 
@@ -189,17 +189,17 @@ No requiere body.
 
 ```json
 {
-    "mensaje": "Producto encontrado",
-    "datos": {
-        "id": 1,
-        "nombre": "Samsung Galaxy A55",
-        "descripcion": "Pantalla AMOLED 6.6 pulgadas",
-        "categoria_id": 1,
-        "precio": "2299000.00",
-        "stock": 12,
-        "marca": "Samsung",
-        "estado": "activo"
-    }
+  "mensaje": "Producto encontrado",
+  "datos": {
+    "id": 1,
+    "nombre": "Samsung Galaxy A55",
+    "descripcion": "Pantalla AMOLED 6.6 pulgadas",
+    "categoria_id": 1,
+    "precio": "2299000.00",
+    "stock": 12,
+    "marca": "Samsung",
+    "estado": "activo"
+  }
 }
 ```
 
@@ -213,8 +213,8 @@ Token no proporcionado o inválido.
 
 ```json
 {
-    "error": true,
-    "message": "Producto no encontrado"
+  "error": true,
+  "message": "Producto no encontrado"
 }
 ```
 
@@ -245,13 +245,13 @@ Authorization: Bearer TOKEN
 
 ```json
 {
-    "nombre": "Mouse inalámbrico",
-    "descripcion": "Mouse óptico USB",
-    "categoria_id": 1,
-    "precio": 45000,
-    "stock": 10,
-    "marca": "Logitech",
-    "estado": "activo"
+  "nombre": "Mouse inalámbrico",
+  "descripcion": "Mouse óptico USB",
+  "categoria_id": 1,
+  "precio": 45000,
+  "stock": 10,
+  "marca": "Logitech",
+  "estado": "activo"
 }
 ```
 
@@ -261,8 +261,8 @@ Authorization: Bearer TOKEN
 
 ```json
 {
-    "mensaje": "Producto creado correctamente",
-    "id": 7
+  "mensaje": "Producto creado correctamente",
+  "id": 7
 }
 ```
 
@@ -303,13 +303,13 @@ Authorization: Bearer TOKEN
 
 ```json
 {
-    "nombre": "Mouse inalámbrico actualizado",
-    "descripcion": "Mouse óptico USB actualizado",
-    "categoria_id": 1,
-    "precio": 50000,
-    "stock": 15,
-    "marca": "Logitech",
-    "estado": "activo"
+  "nombre": "Mouse inalámbrico actualizado",
+  "descripcion": "Mouse óptico USB actualizado",
+  "categoria_id": 1,
+  "precio": 50000,
+  "stock": 15,
+  "marca": "Logitech",
+  "estado": "activo"
 }
 ```
 
@@ -319,7 +319,7 @@ Authorization: Bearer TOKEN
 
 ```json
 {
-    "mensaje": "Producto actualizado correctamente"
+  "mensaje": "Producto actualizado correctamente"
 }
 ```
 
@@ -333,8 +333,8 @@ Token no proporcionado o inválido.
 
 ```json
 {
-    "error": true,
-    "message": "Producto no encontrado"
+  "error": true,
+  "message": "Producto no encontrado"
 }
 ```
 
@@ -370,7 +370,7 @@ No requiere body.
 
 ```json
 {
-    "mensaje": "Producto eliminado correctamente"
+  "mensaje": "Producto eliminado correctamente"
 }
 ```
 
@@ -384,8 +384,8 @@ Token no proporcionado o inválido.
 
 ```json
 {
-    "error": true,
-    "message": "Producto no encontrado"
+  "error": true,
+  "message": "Producto no encontrado"
 }
 ```
 
@@ -397,14 +397,14 @@ Error al eliminar el producto.
 
 # Códigos HTTP utilizados
 
-| Código | Descripción |
-|---|---|
-| 200 | Operación realizada correctamente |
-| 201 | Recurso creado correctamente |
-| 400 | Solicitud incorrecta |
-| 401 | No autorizado o token inválido |
-| 404 | Recurso no encontrado |
-| 500 | Error interno del servidor |
+| Código | Descripción                       |
+| ------ | --------------------------------- |
+| 200    | Operación realizada correctamente |
+| 201    | Recurso creado correctamente      |
+| 400    | Solicitud incorrecta              |
+| 401    | No autorizado o token inválido    |
+| 404    | Recurso no encontrado             |
+| 500    | Error interno del servidor        |
 
 ---
 

@@ -28,14 +28,14 @@ if ($modulo === 'logout') {
             $parametros['path'],
             $parametros['domain'],
             $parametros['secure'],
-            $parametros['httponly']
+            $parametros['httponly'],
         );
     }
 
     session_destroy();
 
     header('Location: /tecnoshop_vscode/?modulo=login');
-    exit;
+    exit();
 }
 
 /**
@@ -46,11 +46,14 @@ if ($modulo === 'login' && $accion === 'establecerSesion') {
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         http_response_code(405);
-        echo json_encode([
-            'ok' => false,
-            'mensaje' => 'Método no permitido.'
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
+        echo json_encode(
+            [
+                'ok' => false,
+                'mensaje' => 'Método no permitido.',
+            ],
+            JSON_UNESCAPED_UNICODE,
+        );
+        exit();
     }
 
     $entrada = json_decode(file_get_contents('php://input'), true);
@@ -59,54 +62,56 @@ if ($modulo === 'login' && $accion === 'establecerSesion') {
 
     if (!is_string($token) || $token === '' || !$secreto) {
         http_response_code(401);
-        echo json_encode([
-            'ok' => false,
-            'mensaje' => 'Falta el token o la configuración de autenticación.'
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
+        echo json_encode(
+            [
+                'ok' => false,
+                'mensaje' => 'Falta el token o la configuración de autenticación.',
+            ],
+            JSON_UNESCAPED_UNICODE,
+        );
+        exit();
     }
 
     $partes = explode('.', $token);
 
     if (count($partes) !== 3) {
         http_response_code(401);
-        echo json_encode([
-            'ok' => false,
-            'mensaje' => 'El token no tiene un formato válido.'
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
+        echo json_encode(
+            [
+                'ok' => false,
+                'mensaje' => 'El token no tiene un formato válido.',
+            ],
+            JSON_UNESCAPED_UNICODE,
+        );
+        exit();
     }
 
     [$cabecera, $cuerpo, $firma] = $partes;
 
-    $firmaEsperada = rtrim(strtr(
-        base64_encode(hash_hmac(
-            'sha256',
-            $cabecera . '.' . $cuerpo,
-            $secreto,
-            true
-        )),
-        '+/',
-        '-_'
-    ), '=');
+    $firmaEsperada = rtrim(
+        strtr(
+            base64_encode(hash_hmac('sha256', $cabecera . '.' . $cuerpo, $secreto, true)),
+            '+/',
+            '-_',
+        ),
+        '=',
+    );
 
     if (!hash_equals($firmaEsperada, $firma)) {
         http_response_code(401);
-        echo json_encode([
-            'ok' => false,
-            'mensaje' => 'El token no es válido.'
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
+        echo json_encode(
+            [
+                'ok' => false,
+                'mensaje' => 'El token no es válido.',
+            ],
+            JSON_UNESCAPED_UNICODE,
+        );
+        exit();
     }
 
-    $contenido = base64_decode(
-        strtr($cuerpo, '-_', '+/'),
-        true
-    );
+    $contenido = base64_decode(strtr($cuerpo, '-_', '+/'), true);
 
-    $datosToken = $contenido !== false
-        ? json_decode($contenido, true)
-        : null;
+    $datosToken = $contenido !== false ? json_decode($contenido, true) : null;
 
     if (
         !is_array($datosToken) ||
@@ -115,22 +120,28 @@ if ($modulo === 'login' && $accion === 'establecerSesion') {
         empty($datosToken['id'])
     ) {
         http_response_code(401);
-        echo json_encode([
-            'ok' => false,
-            'mensaje' => 'El token ha expirado o no contiene un usuario válido.'
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
+        echo json_encode(
+            [
+                'ok' => false,
+                'mensaje' => 'El token ha expirado o no contiene un usuario válido.',
+            ],
+            JSON_UNESCAPED_UNICODE,
+        );
+        exit();
     }
 
     session_regenerate_id(true);
     $_SESSION['tecnoshop_autenticado'] = true;
     $_SESSION['tecnoshop_usuario_id'] = (int) $datosToken['id'];
 
-    echo json_encode([
-        'ok' => true,
-        'mensaje' => 'Sesión iniciada correctamente.'
-    ], JSON_UNESCAPED_UNICODE);
-    exit;
+    echo json_encode(
+        [
+            'ok' => true,
+            'mensaje' => 'Sesión iniciada correctamente.',
+        ],
+        JSON_UNESCAPED_UNICODE,
+    );
+    exit();
 }
 
 /**
@@ -139,7 +150,7 @@ if ($modulo === 'login' && $accion === 'establecerSesion') {
 if ($modulo === 'login') {
     header('Content-Type: text/html; charset=utf-8');
     require __DIR__ . '/vistas/login.php';
-    exit;
+    exit();
 }
 
 /**
@@ -153,10 +164,10 @@ require_once __DIR__ . '/controladores/IAControlador.php';
 
 $controladores = [
     'productos' => ProductoControlador::class,
-    'clientes'  => ClienteControlador::class,
-    'ventas'    => VentaControlador::class,
-    'reportes'  => ReporteControlador::class,
-    'ia'        => IAControlador::class,
+    'clientes' => ClienteControlador::class,
+    'ventas' => VentaControlador::class,
+    'reportes' => ReporteControlador::class,
+    'ia' => IAControlador::class,
 ];
 
 $accionesJson = [
@@ -170,7 +181,7 @@ $accionesJson = [
     'ventasPorMes',
     'ventasPorCategoria',
     'topProductos',
-    'stockBajo'
+    'stockBajo',
 ];
 
 /**
@@ -183,11 +194,14 @@ if (
 ) {
     http_response_code(401);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode([
-        'ok' => false,
-        'mensaje' => 'Sesión no autenticada. Inicia sesión nuevamente.'
-    ], JSON_UNESCAPED_UNICODE);
-    exit;
+    echo json_encode(
+        [
+            'ok' => false,
+            'mensaje' => 'Sesión no autenticada. Inicia sesión nuevamente.',
+        ],
+        JSON_UNESCAPED_UNICODE,
+    );
+    exit();
 }
 
 /**
@@ -195,7 +209,7 @@ if (
  */
 if (empty($_SESSION['tecnoshop_autenticado'])) {
     header('Location: /tecnoshop_vscode/?modulo=login');
-    exit;
+    exit();
 }
 
 /**
@@ -209,31 +223,37 @@ if (isset($controladores[$modulo])) {
         http_response_code(404);
         header('Content-Type: application/json; charset=utf-8');
 
-        echo json_encode([
-            'ok' => false,
-            'mensaje' => "Acción '$accion' no encontrada en el módulo '$modulo'."
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
+        echo json_encode(
+            [
+                'ok' => false,
+                'mensaje' => "Acción '$accion' no encontrada en el módulo '$modulo'.",
+            ],
+            JSON_UNESCAPED_UNICODE,
+        );
+        exit();
     }
 
     if (in_array($accion, $accionesJson, true)) {
         $controlador->$accion();
-        exit;
+        exit();
     }
 
     if ($accion === 'listar' || $accion === 'dashboard') {
         $controlador->$accion();
-        exit;
+        exit();
     }
 
     http_response_code(404);
     header('Content-Type: application/json; charset=utf-8');
 
-    echo json_encode([
-        'ok' => false,
-        'mensaje' => "La acción '$accion' no está habilitada."
-    ], JSON_UNESCAPED_UNICODE);
-    exit;
+    echo json_encode(
+        [
+            'ok' => false,
+            'mensaje' => "La acción '$accion' no está habilitada.",
+        ],
+        JSON_UNESCAPED_UNICODE,
+    );
+    exit();
 }
 
 /**
@@ -245,7 +265,7 @@ if ($modulo === 'dashboard') {
     require __DIR__ . '/vistas/layout/header.php';
     require __DIR__ . '/vistas/dashboard.php';
     require __DIR__ . '/vistas/layout/footer.php';
-    exit;
+    exit();
 }
 
 http_response_code(404);

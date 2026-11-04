@@ -49,21 +49,18 @@ $totalProductos = obtenerTotal(
   $conexion,
   "SELECT COUNT(*) AS total
      FROM productos
-     WHERE estado = 'activo'"
+     WHERE estado = 'activo'",
 );
 
 // La tabla clientes no tiene columna estado.
-$totalClientes = obtenerTotal(
-  $conexion,
-  "SELECT COUNT(*) AS total FROM clientes"
-);
+$totalClientes = obtenerTotal($conexion, 'SELECT COUNT(*) AS total FROM clientes');
 
 $totalVentas = obtenerTotal(
   $conexion,
   "SELECT COUNT(*) AS total
      FROM ventas
      WHERE MONTH(fecha) = MONTH(CURRENT_DATE())
-       AND YEAR(fecha) = YEAR(CURRENT_DATE())"
+       AND YEAR(fecha) = YEAR(CURRENT_DATE())",
 );
 
 $ingresosMes = obtenerImporte(
@@ -72,14 +69,14 @@ $ingresosMes = obtenerImporte(
      FROM ventas
      WHERE MONTH(fecha) = MONTH(CURRENT_DATE())
        AND YEAR(fecha) = YEAR(CURRENT_DATE())
-       AND estado = 'completada'"
+       AND estado = 'completada'",
 );
 
 $stockBajo = obtenerTotal(
   $conexion,
   "SELECT COUNT(*) AS total
      FROM productos
-     WHERE stock < 5 AND estado = 'activo'"
+     WHERE stock < 5 AND estado = 'activo'",
 );
 
 // Últimas cinco ventas.
@@ -220,36 +217,24 @@ if ($resultadoVentas !== false) {
                 </td>
 
                 <td>
-                  <?= htmlspecialchars(
-                    $venta['cliente'] ?? 'Sin cliente',
-                    ENT_QUOTES,
-                    'UTF-8'
-                  ) ?>
+                  <?= htmlspecialchars($venta['cliente'] ?? 'Sin cliente', ENT_QUOTES, 'UTF-8') ?>
                 </td>
 
                 <td>
                   <?= !empty($venta['fecha'])
-                    ? date(
-                      'd/m/Y H:i',
-                      strtotime($venta['fecha'])
-                    )
+                    ? date('d/m/Y H:i', strtotime($venta['fecha']))
                     : '—' ?>
                 </td>
 
                 <td>
-                  $<?= number_format(
-                      (float) $venta['total'],
-                      0,
-                      ',',
-                      '.'
-                    ) ?>
+                  $<?= number_format((float) $venta['total'], 0, ',', '.') ?>
                 </td>
 
                 <td>
                   <?= htmlspecialchars(
                     ucfirst($venta['estado'] ?? 'Sin estado'),
                     ENT_QUOTES,
-                    'UTF-8'
+                    'UTF-8',
                   ) ?>
                 </td>
               </tr>

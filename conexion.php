@@ -12,15 +12,15 @@ mysqli_report(MYSQLI_REPORT_OFF);
 $rutaEnv = __DIR__ . '/.env';
 
 if (file_exists($rutaEnv)) {
-    $variables = parse_ini_file($rutaEnv, false, INI_SCANNER_RAW);
+  $variables = parse_ini_file($rutaEnv, false, INI_SCANNER_RAW);
 
-    if ($variables !== false) {
-        foreach ($variables as $nombre => $valor) {
-            if (getenv($nombre) === false) {
-                putenv($nombre . '=' . $valor);
-            }
-        }
+  if ($variables !== false) {
+    foreach ($variables as $nombre => $valor) {
+      if (getenv($nombre) === false) {
+        putenv($nombre . '=' . $valor);
+      }
     }
+  }
 }
 
 /**
@@ -29,7 +29,7 @@ if (file_exists($rutaEnv)) {
 $host = getenv('DB_HOST') ?: 'localhost';
 $usuario = getenv('DB_USER') ?: 'root';
 $clave = getenv('DB_PASS');
-$clave = ($clave === false) ? '' : $clave;
+$clave = $clave === false ? '' : $clave;
 $base = getenv('DB_NAME') ?: 'tecnoshop_db_restaurada';
 $charset = getenv('DB_CHARSET') ?: 'utf8mb4';
 
@@ -39,12 +39,11 @@ $charset = getenv('DB_CHARSET') ?: 'utf8mb4';
 $conexion = new mysqli($host, $usuario, $clave, $base);
 
 if ($conexion->connect_error) {
-    http_response_code(500);
-    die('Error de conexión a MySQL: ' .
-        htmlspecialchars($conexion->connect_error, ENT_QUOTES, 'UTF-8'));
+  http_response_code(500);
+  die('Error de conexión a MySQL: ' . htmlspecialchars($conexion->connect_error, ENT_QUOTES, 'UTF-8'));
 }
 
 if (!$conexion->set_charset($charset)) {
-    http_response_code(500);
-    die('Error al configurar el conjunto de caracteres.');
+  http_response_code(500);
+  die('Error al configurar el conjunto de caracteres.');
 }

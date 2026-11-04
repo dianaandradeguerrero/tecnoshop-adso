@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Footer principal de TecnoShop
  * Proyecto SENA ADSO

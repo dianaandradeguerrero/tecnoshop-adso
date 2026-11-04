@@ -1,6 +1,5 @@
 <?php
-$baseUrl = '/tecnoshop_vscode/';
-?>
+$baseUrl = '/tecnoshop_vscode/'; ?>
 <!DOCTYPE html>
 <html lang="es">
 

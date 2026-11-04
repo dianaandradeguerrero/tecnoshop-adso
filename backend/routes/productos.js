@@ -1,27 +1,27 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
 // Conexión a MySQL ubicada en la carpeta backend
-const db = require("../db");
+const db = require('../db');
 
 // ======================================================
 // GET /api/productos
 // Listar todos los productos
 // ======================================================
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const [productos] = await db.query("SELECT * FROM productos");
+    const [productos] = await db.query('SELECT * FROM productos');
 
     res.status(200).json({
-      mensaje: "Listado de productos",
+      mensaje: 'Listado de productos',
       datos: productos,
     });
   } catch (error) {
-    console.error("Error al consultar productos:", error);
+    console.error('Error al consultar productos:', error);
 
     res.status(500).json({
       error: true,
-      message: "Error al consultar los productos",
+      message: 'Error al consultar los productos',
     });
   }
 });
@@ -30,29 +30,27 @@ router.get("/", async (req, res) => {
 // GET /api/productos/:id
 // Obtener un producto por ID
 // ======================================================
-router.get("/:id", async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const [productos] = await db.query("SELECT * FROM productos WHERE id = ?", [
-      req.params.id,
-    ]);
+    const [productos] = await db.query('SELECT * FROM productos WHERE id = ?', [req.params.id]);
 
     if (productos.length === 0) {
       return res.status(404).json({
         error: true,
-        message: "Producto no encontrado",
+        message: 'Producto no encontrado',
       });
     }
 
     res.status(200).json({
-      mensaje: "Producto encontrado",
+      mensaje: 'Producto encontrado',
       datos: productos[0],
     });
   } catch (error) {
-    console.error("Error al consultar producto:", error);
+    console.error('Error al consultar producto:', error);
 
     res.status(500).json({
       error: true,
-      message: "Error al consultar el producto",
+      message: 'Error al consultar el producto',
     });
   }
 });
@@ -61,10 +59,9 @@ router.get("/:id", async (req, res) => {
 // POST /api/productos
 // Crear un producto
 // ======================================================
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   try {
-    const { nombre, descripcion, categoria_id, precio, stock, marca, estado } =
-      req.body;
+    const { nombre, descripcion, categoria_id, precio, stock, marca, estado } = req.body;
 
     if (
       !nombre ||
@@ -76,7 +73,7 @@ router.post("/", async (req, res) => {
     ) {
       return res.status(400).json({
         error: true,
-        message: "Todos los datos del producto son obligatorios",
+        message: 'Todos los datos del producto son obligatorios',
       });
     }
 
@@ -90,27 +87,19 @@ router.post("/", async (req, res) => {
                 marca,
                 estado
             ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [
-        nombre,
-        descripcion,
-        categoria_id,
-        precio,
-        stock,
-        marca,
-        estado || "activo",
-      ],
+      [nombre, descripcion, categoria_id, precio, stock, marca, estado || 'activo'],
     );
 
     res.status(201).json({
-      mensaje: "Producto creado correctamente",
+      mensaje: 'Producto creado correctamente',
       id: resultado.insertId,
     });
   } catch (error) {
-    console.error("Error al crear producto:", error);
+    console.error('Error al crear producto:', error);
 
     res.status(500).json({
       error: true,
-      message: "Error al crear el producto",
+      message: 'Error al crear el producto',
     });
   }
 });
@@ -119,10 +108,9 @@ router.post("/", async (req, res) => {
 // PUT /api/productos/:id
 // Actualizar un producto
 // ======================================================
-router.put("/:id", async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
-    const { nombre, descripcion, categoria_id, precio, stock, marca, estado } =
-      req.body;
+    const { nombre, descripcion, categoria_id, precio, stock, marca, estado } = req.body;
 
     if (
       !nombre ||
@@ -135,7 +123,7 @@ router.put("/:id", async (req, res) => {
     ) {
       return res.status(400).json({
         error: true,
-        message: "Todos los datos del producto son obligatorios",
+        message: 'Todos los datos del producto son obligatorios',
       });
     }
 
@@ -149,34 +137,25 @@ router.put("/:id", async (req, res) => {
                  marca = ?,
                  estado = ?
              WHERE id = ?`,
-      [
-        nombre,
-        descripcion,
-        categoria_id,
-        precio,
-        stock,
-        marca,
-        estado,
-        req.params.id,
-      ],
+      [nombre, descripcion, categoria_id, precio, stock, marca, estado, req.params.id],
     );
 
     if (resultado.affectedRows === 0) {
       return res.status(404).json({
         error: true,
-        message: "Producto no encontrado",
+        message: 'Producto no encontrado',
       });
     }
 
     res.status(200).json({
-      mensaje: "Producto actualizado correctamente",
+      mensaje: 'Producto actualizado correctamente',
     });
   } catch (error) {
-    console.error("Error al actualizar producto:", error);
+    console.error('Error al actualizar producto:', error);
 
     res.status(500).json({
       error: true,
-      message: "Error al actualizar el producto",
+      message: 'Error al actualizar el producto',
     });
   }
 });
@@ -185,28 +164,26 @@ router.put("/:id", async (req, res) => {
 // DELETE /api/productos/:id
 // Eliminar un producto
 // ======================================================
-router.delete("/:id", async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    const [resultado] = await db.query("DELETE FROM productos WHERE id = ?", [
-      req.params.id,
-    ]);
+    const [resultado] = await db.query('DELETE FROM productos WHERE id = ?', [req.params.id]);
 
     if (resultado.affectedRows === 0) {
       return res.status(404).json({
         error: true,
-        message: "Producto no encontrado",
+        message: 'Producto no encontrado',
       });
     }
 
     res.status(200).json({
-      mensaje: "Producto eliminado correctamente",
+      mensaje: 'Producto eliminado correctamente',
     });
   } catch (error) {
-    console.error("Error al eliminar producto:", error);
+    console.error('Error al eliminar producto:', error);
 
     res.status(500).json({
       error: true,
-      message: "Error al eliminar el producto",
+      message: 'Error al eliminar el producto',
     });
   }
 });

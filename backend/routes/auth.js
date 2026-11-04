@@ -1,8 +1,8 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const db = require("../db");
+const db = require('../db');
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ const router = express.Router();
 // POST /api/auth/login
 // Iniciar sesión
 // ======================================================
-router.post("/login", async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -18,31 +18,28 @@ router.post("/login", async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         error: true,
-        message: "Email y contraseña son obligatorios",
+        message: 'Email y contraseña son obligatorios',
       });
     }
 
     // Verificar que exista el secreto JWT
     if (!process.env.JWT_SECRET) {
-      console.error("JWT_SECRET no está configurado en backend/.env");
+      console.error('JWT_SECRET no está configurado en backend/.env');
 
       return res.status(500).json({
         error: true,
-        message: "Error de configuración del servidor",
+        message: 'Error de configuración del servidor',
       });
     }
 
     // Buscar usuario por email
-    const [usuarios] = await db.query(
-      "SELECT * FROM clientes WHERE email = ?",
-      [email],
-    );
+    const [usuarios] = await db.query('SELECT * FROM clientes WHERE email = ?', [email]);
 
     // Usuario no encontrado
     if (usuarios.length === 0) {
       return res.status(401).json({
         error: true,
-        message: "Email o contraseña incorrectos",
+        message: 'Email o contraseña incorrectos',
       });
     }
 
@@ -55,7 +52,7 @@ router.post("/login", async (req, res) => {
     if (!passwordValida) {
       return res.status(401).json({
         error: true,
-        message: "Email o contraseña incorrectos",
+        message: 'Email o contraseña incorrectos',
       });
     }
 
@@ -67,7 +64,7 @@ router.post("/login", async (req, res) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: "1h",
+        expiresIn: '1h',
       },
     );
 
@@ -80,11 +77,11 @@ router.post("/login", async (req, res) => {
       user: usuarioSinPassword,
     });
   } catch (error) {
-    console.error("Error en login:", error);
+    console.error('Error en login:', error);
 
     return res.status(500).json({
       error: true,
-      message: "Error interno del servidor",
+      message: 'Error interno del servidor',
     });
   }
 });
