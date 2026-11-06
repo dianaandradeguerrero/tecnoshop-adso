@@ -6,3 +6,13 @@ node_modules/
 error_log
 .DS_Store
 Thumbs.db
+# Configuración de editores
+.vscode/
+.idea/
+
+# Archivos temporales
+*.tmp
+*.bak
+
+# Registros
+logs/
