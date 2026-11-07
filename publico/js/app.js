@@ -56,7 +56,7 @@ function productosApp() {
       this.cargando = true;
 
       try {
-        const res = await fetch(`${API}?modulo=productos&accion=obtenerTodos`);
+        const res = await fetch(`${API_URL}?modulo=productos&accion=obtenerTodos`);
         const json = await res.json();
         this.productos = json.ok ? json.datos : [];
       } catch (e) {
@@ -67,7 +67,7 @@ function productosApp() {
     },
 
     async cargarCategorias() {
-      const res = await fetch(`${API}?modulo=productos&accion=categorias`);
+      const res = await fetch(`${API_URL}?modulo=productos&accion=categorias`);
       const json = await res.json();
       this.categorias = json.ok ? json.datos : [];
     },
@@ -121,7 +121,7 @@ function productosApp() {
     async enviarFormulario() {
       const accion = this.obtenerAccion();
 
-      const res = await fetch(`${API}?modulo=productos&accion=${accion}`, {
+      const res = await fetch(`${API_URL}?modulo=productos&accion=${accion}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ function productosApp() {
      */
 
     async eliminarProducto(id) {
-      const res = await fetch(`${API}?modulo=productos&accion=eliminar&id=${id}`, {
+      const res = await fetch(`${API_URL}?modulo=productos&accion=eliminar&id=${id}`, {
         method: 'DELETE',
       });
 
@@ -216,7 +216,7 @@ function clientesApp() {
     async cargar() {
       this.cargando = true;
       try {
-        const res = await fetch(`${API}?modulo=clientes&accion=obtenerTodos`);
+        const res = await fetch(`${API_URL}?modulo=clientes&accion=obtenerTodos`);
         const json = await res.json();
         this.clientes = json.ok ? json.datos : [];
       } catch (e) {
@@ -257,7 +257,7 @@ function clientesApp() {
       }
       const accion = this.modoEdicion ? 'actualizar' : 'guardar';
       try {
-        const res = await fetch(`${API}?modulo=clientes&accion=${accion}`, {
+        const res = await fetch(`${API_URL}?modulo=clientes&accion=${accion}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(this.form),
@@ -276,7 +276,7 @@ function clientesApp() {
     async eliminar(id) {
       if (!confirm('¿Eliminar este cliente?')) return;
       try {
-        const res = await fetch(`${API}?modulo=clientes&accion=eliminar&id=${id}`, {
+        const res = await fetch(`${API_URL}?modulo=clientes&accion=eliminar&id=${id}`, {
           method: 'DELETE',
         });
         const json = await res.json();
@@ -294,7 +294,7 @@ function clientesApp() {
       this.cargandoIA = true;
       this.mostrarIA = true;
       try {
-        const res = await fetch(`${API}?modulo=ia&accion=sugerirProductos&id=${cliente.id}`);
+        const res = await fetch(`${API_URL}?modulo=ia&accion=sugerirProductos&id=${cliente.id}`);
         const json = await res.json();
         this.sugerencias = json.datos?.sugerencias ?? [];
       } catch (e) {
@@ -313,7 +313,7 @@ function clientesApp() {
 // ══════════════════════════════════════════════════════
 // VENTAS
 /**
- * Ejecuta una consulta a la API y devuelve los datos JSON.
+ * Ejecuta una consulta a la API_URL y devuelve los datos JSON.
  * @param {string} url - Dirección del servicio solicitado.
  * @returns {Promise<Object>} Respuesta recibida del servidor.
  */
@@ -339,28 +339,47 @@ function ventasApp() {
   return {
     ventas: [],
     clientes: [],
-    cargando: true,
-    cargandoClientes: false,
-    guardando: false,
-    mostrarModal: false,
+    productos: [],
+    detalles: [],
     mensaje: '',
     tipoMsg: 'success',
-
     form: {
       cliente_id: '',
-      total: '',
-      estado: 'activa',
     },
+    cargando: true,
+    cargandoClientes: false,
+    cargandoProductos: false,
+    guardando: false,
+    mostrarModal: false,
 
     async init() {
-      await Promise.all([this.cargar(), this.cargarClientes()]);
+      await Promise.all([this.cargar(), this.cargarClientes(), this.cargarProductos()]);
+    },
+
+    get totalVenta() {
+      return this.detalles.reduce((total, detalle) => {
+        const producto = this.productos.find((p) => Number(p.id) === Number(detalle.producto_id));
+
+        return total + (producto ? Number(producto.precio) * Number(detalle.cantidad || 0) : 0);
+      }, 0);
+    },
+
+    calcularSubtotal(detalle) {
+      const producto = this.productos.find((p) => Number(p.id) === Number(detalle.producto_id));
+
+      return producto ? Number(producto.precio) * Number(detalle.cantidad || 0) : 0;
+    },
+
+    // Alias de compatibilidad con la vista de ventas.
+    subtotalDetalle(detalle) {
+      return this.calcularSubtotal(detalle);
     },
 
     async cargar() {
       this.cargando = true;
 
       try {
-        const json = await consultarApi(`${API}?modulo=ventas&accion=obtenerTodos`);
+        const json = await consultarApi(`${API_URL}?modulo=ventas&accion=obtenerTodos`);
 
         if (!json.ok) {
           throw new Error(json.mensaje || 'Error al cargar las ventas.');
@@ -380,35 +399,74 @@ function ventasApp() {
       this.cargandoClientes = true;
 
       try {
-        const json = await consultarApi(`${API}?modulo=clientes&accion=obtenerTodos`);
+        const json = await consultarApi(`${API_URL}?modulo=clientes&accion=obtenerTodos`);
 
         if (!json.ok) {
-          throw new Error(json.mensaje || 'Error al cargar los clientes.');
+          throw new Error(json.mensaje || 'Error al cargar clientes.');
         }
 
         this.clientes = Array.isArray(json.datos) ? json.datos : [];
       } catch (e) {
         console.error('Error al cargar clientes:', e);
         this.clientes = [];
-        crearAlerta(this, 'No se pudieron cargar los clientes para el formulario.', 'danger');
+        crearAlerta(this, 'No se pudieron cargar los clientes.', 'danger');
       } finally {
         this.cargandoClientes = false;
       }
     },
 
+    async cargarProductos() {
+      this.cargandoProductos = true;
+
+      try {
+        const json = await consultarApi(`${API_URL}?modulo=productos&accion=obtenerTodos`);
+
+        if (!json.ok) {
+          throw new Error(json.mensaje || 'Error al cargar productos.');
+        }
+
+        this.productos = Array.isArray(json.datos) ? json.datos : [];
+      } catch (e) {
+        console.error('Error al cargar productos:', e);
+        this.productos = [];
+        crearAlerta(this, 'No se pudieron cargar los productos.', 'danger');
+      } finally {
+        this.cargandoProductos = false;
+      }
+    },
+
     abrirFormulario() {
       if (this.clientes.length === 0) {
-        crearAlerta(this, 'Primero debes tener al menos un cliente registrado.', 'warning');
+        crearAlerta(this, 'Primero registra al menos un cliente.', 'warning');
+        return;
+      }
+
+      if (this.productos.length === 0) {
+        crearAlerta(this, 'No hay productos disponibles para vender.', 'warning');
         return;
       }
 
       this.form = {
         cliente_id: '',
-        total: '',
-        estado: 'activa',
       };
+      this.detalles = [{ producto_id: '', cantidad: 1 }];
+      this.mensaje = '';
+      this.tipoMsg = 'success';
 
       this.mostrarModal = true;
+    },
+
+    agregarProducto() {
+      this.detalles.push({
+        producto_id: '',
+        cantidad: 1,
+      });
+    },
+
+    quitarProducto(indice) {
+      if (this.detalles.length > 1) {
+        this.detalles.splice(indice, 1);
+      }
     },
 
     cerrarModal() {
@@ -418,28 +476,42 @@ function ventasApp() {
     async guardar() {
       if (this.guardando) return;
 
-      if (!this.form.cliente_id) {
+      if (!this.form?.cliente_id) {
         crearAlerta(this, 'Selecciona un cliente.', 'warning');
         return;
       }
 
-      if (!this.form.total || Number(this.form.total) <= 0) {
-        crearAlerta(this, 'Ingresa un total mayor que cero.', 'warning');
+      if (this.detalles.length === 0) {
+        crearAlerta(this, 'Agrega al menos un producto.', 'warning');
+        return;
+      }
+
+      for (const detalle of this.detalles) {
+        if (!detalle.producto_id || Number(detalle.cantidad) < 1) {
+          crearAlerta(this, 'Selecciona un producto e ingresa una cantidad válida.', 'warning');
+          return;
+        }
+      }
+
+      if (this.totalVenta <= 0) {
+        crearAlerta(this, 'El total de la venta debe ser mayor que cero.', 'warning');
         return;
       }
 
       this.guardando = true;
 
       try {
-        const res = await fetch(`${API}?modulo=ventas&accion=guardar`, {
+        const res = await fetch(`${API_URL}?modulo=ventas&accion=guardar`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             cliente_id: Number(this.form.cliente_id),
-            total: Number(this.form.total),
-            estado: this.form.estado,
+            productos: this.detalles.map((detalle) => ({
+              producto_id: Number(detalle.producto_id),
+              cantidad: Number(detalle.cantidad),
+            })),
           }),
         });
 
@@ -447,13 +519,14 @@ function ventasApp() {
 
         crearAlerta(
           this,
-          json.mensaje || (json.ok ? 'Venta registrada.' : 'No se pudo registrar la venta.'),
+          json.mensaje ||
+            (json.ok ? 'Venta registrada correctamente.' : 'No se pudo registrar la venta.'),
           json.ok ? 'success' : 'danger',
         );
 
         if (json.ok) {
           this.cerrarModal();
-          await this.cargar();
+          await Promise.all([this.cargar(), this.cargarProductos()]);
         }
       } catch (e) {
         console.error('Error al guardar venta:', e);
@@ -468,7 +541,7 @@ function ventasApp() {
 
       try {
         const res = await fetch(
-          `${API}?modulo=ventas&accion=cancelar&id=${encodeURIComponent(id)}`,
+          `${API_URL}?modulo=ventas&accion=cancelar&id=${encodeURIComponent(id)}`,
           { method: 'DELETE' },
         );
 
@@ -504,8 +577,8 @@ function reportesApp() {
       this.cargando = true;
       try {
         const [r1, r2] = await Promise.all([
-          fetch(`${API}?modulo=reportes&accion=topProductos`).then((r) => r.json()),
-          fetch(`${API}?modulo=reportes&accion=stockBajo`).then((r) => r.json()),
+          fetch(`${API_URL}?modulo=reportes&accion=topProductos`).then((r) => r.json()),
+          fetch(`${API_URL}?modulo=reportes&accion=stockBajo`).then((r) => r.json()),
         ]);
         this.topProductos = r1.ok ? r1.datos : [];
         this.stockBajo = r2.ok ? r2.datos : [];
@@ -528,7 +601,7 @@ function resumenIAApp() {
     async cargar() {
       this.cargando = true;
       try {
-        const res = await fetch(`${API}?modulo=ia&accion=resumenNegocio`);
+        const res = await fetch(`${API_URL}?modulo=ia&accion=resumenNegocio`);
         const json = await res.json();
         this.datos = json.ok ? json.datos : null;
       } catch (e) {
@@ -550,7 +623,7 @@ function prediccionApp() {
     async cargar() {
       this.cargando = true;
       try {
-        const res = await fetch(`${API}?modulo=ia&accion=predecirAgotamiento`);
+        const res = await fetch(`${API_URL}?modulo=ia&accion=predecirAgotamiento`);
         const json = await res.json();
         this.predicciones = json.ok ? json.datos : [];
       } catch (e) {
