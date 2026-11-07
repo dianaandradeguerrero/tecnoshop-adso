@@ -1,4 +1,3 @@
-<?php require_once __DIR__ . '/../../vistas/layout/header.php'; ?>
 <div class="card">
   <div class="card-header"><h2>📈 Ventas por mes — <?= date('Y') ?></h2></div>
   <div class="card-body"><canvas id="graficaLinea" height="120"></canvas></div>
@@ -51,7 +50,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const r = await fetch('/tecnoshop/?modulo=reportes&accion=ventasPorMes');
+    const r = await fetch('/tecnoshop_vscode/index.php?modulo=reportes&accion=ventasPorMes');
     const j = await r.json();
     new Chart(document.getElementById('graficaLinea'), {
       type: 'line',
@@ -69,4 +68,3 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch(e) {}
 });
 </script>
-<?php require_once __DIR__ . '/../../vistas/layout/footer.php'; ?>
