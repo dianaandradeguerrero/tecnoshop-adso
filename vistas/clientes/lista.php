@@ -1,4 +1,3 @@
-<?php require_once __DIR__ . '/../../vistas/layout/header.php'; ?>
 <div class="card" x-data="clientesApp()">
   <template x-if="mensaje">
     <div :class="`alert alert-${tipoMsg}`" x-text="mensaje"></div>
@@ -83,4 +82,3 @@
     </div>
   </div>
 </div>
-<?php require_once __DIR__ . '/../../vistas/layout/footer.php'; ?>

@@ -1,72 +1,186 @@
-<?php require_once __DIR__ . '/../../vistas/layout/header.php'; ?>
 <div class="card" x-data="productosApp()">
   <template x-if="mensaje">
-    <div :class="`alert alert-${tipoMsg}`" x-text="mensaje"></div>
+    <div class="alert" :class="'alert-' + tipoMsg" x-text="mensaje"></div>
   </template>
+
   <div class="card-header">
-    <h2>📦 Lista de Productos</h2>
-    <button class="btn btn-primary" @click="abrirFormulario()">
+    <div>
+      <h2>📦 Lista de Productos</h2>
+      <small>Administra el inventario de TecnoShop.</small>
+    </div>
+    <button type="button" class="btn btn-primary" @click="abrirFormulario()">
       <i class="bi bi-plus-lg"></i> Nuevo Producto
     </button>
   </div>
+
   <div class="card-body">
-    <div x-show="cargando" class="spinner-wrap"><div class="spinner"></div> Cargando...</div>
+    <div x-show="cargando" class="spinner-wrap">
+      <div class="spinner"></div> Cargando productos...
+    </div>
+
     <div x-show="!cargando" class="table-responsive">
       <table>
-        <thead><tr><th>#</th><th>Nombre</th><th>Marca</th><th>Precio</th><th>Stock</th><th>Categoría</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Marca</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
         <tbody>
-          <template x-for="p in productos" :key="p.id">
+          <template x-for="producto in productos" :key="producto.id">
             <tr>
-              <td x-text="p.id"></td>
-              <td><strong x-text="p.nombre"></strong></td>
-              <td x-text="p.marca"></td>
-              <td x-text="'$' + Number(p.precio).toLocaleString('es-CO')"></td>
-              <td><span :class="p.stock < 5 ? 'stock-bajo' : ''" x-text="p.stock + ' uds.'"></span></td>
-              <td x-text="p.categoria || '—'"></td>
-              <td><span class="badge badge-success">Activo</span></td>
-              <td style="display:flex;gap:6px;">
-                <button class="btn btn-secondary btn-sm" @click="editar(p)"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-danger btn-sm" @click="eliminar(p.id)"><i class="bi bi-trash"></i></button>
+              <td x-text="'#' + producto.id"></td>
+              <td>
+                <strong x-text="producto.nombre"></strong>
+                <small
+                  x-show="producto.descripcion"
+                  style="display:block; color:#64748b; max-width:260px;"
+                  x-text="producto.descripcion">
+                </small>
+              </td>
+              <td x-text="producto.categoria || 'Sin categoría'"></td>
+              <td x-text="producto.marca || '—'"></td>
+              <td x-text="'$' + Number(producto.precio || 0).toLocaleString('es-CO')"></td>
+              <td>
+                <span
+                  class="badge"
+                  :class="Number(producto.stock) < 5 ? 'badge-danger' : 'badge-success'"
+                  x-text="producto.stock">
+                </span>
+              </td>
+              <td>
+                <span class="badge badge-success" x-text="producto.estado || 'activo'"></span>
+              </td>
+              <td>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    @click="editar(producto)">
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm"
+                    @click="eliminar(producto.id)">
+                    Desactivar
+                  </button>
+                </div>
               </td>
             </tr>
           </template>
-          <template x-if="!cargando && productos.length===0">
-            <tr><td colspan="8"><div class="empty-state"><p>No hay productos.</p></div></td></tr>
-          </template>
+
+          <tr x-show="productos.length === 0 && !cargando">
+            <td colspan="8" style="text-align:center; padding:20px;">
+              No hay productos registrados.
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- Modal formulario -->
-  <div class="modal-overlay" x-show="mostrarModal" x-cloak>
+  <!-- Modal para crear o editar productos -->
+  <div
+    class="modal-overlay"
+    x-show="mostrarModal"
+    x-cloak
+    style="display:none;"
+    @click.self="cerrarModal()">
+
     <div class="modal">
       <div class="modal-header">
-        <h3 x-text="modoEdicion ? '✏️ Editar Producto' : '➕ Nuevo Producto'"></h3>
-        <button class="btn-close" @click="cerrarModal()">✕</button>
+        <h3 x-text="modoEdicion ? 'Editar producto' : 'Nuevo producto'"></h3>
+        <button type="button" class="btn-close" @click="cerrarModal()">✕</button>
       </div>
-      <div class="modal-body">
-        <div class="form-grid-2">
-          <div class="form-group"><label>Nombre *</label><input type="text" x-model="form.nombre" placeholder="Nombre del producto"></div>
-          <div class="form-group"><label>Marca</label><input type="text" x-model="form.marca" placeholder="Marca"></div>
-          <div class="form-group"><label>Precio *</label><input type="number" x-model="form.precio" placeholder="0" min="0"></div>
-          <div class="form-group"><label>Stock</label><input type="number" x-model="form.stock" placeholder="0" min="0"></div>
+
+      <form @submit.prevent="guardar()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="producto_nombre">Nombre *</label>
+            <input
+              id="producto_nombre"
+              type="text"
+              x-model.trim="form.nombre"
+              maxlength="150"
+              required
+              placeholder="Nombre del producto">
+          </div>
+
+          <div class="form-group">
+            <label for="producto_descripcion">Descripción</label>
+            <textarea
+              id="producto_descripcion"
+              x-model="form.descripcion"
+              rows="3"
+              placeholder="Descripción del producto"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="producto_categoria">Categoría</label>
+            <select id="producto_categoria" x-model="form.categoria_id">
+              <option value="">Selecciona una categoría</option>
+              <template x-for="categoria in categorias" :key="categoria.id">
+                <option
+                  :value="String(categoria.id)"
+                  x-text="categoria.nombre">
+                </option>
+              </template>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="producto_marca">Marca</label>
+            <input
+              id="producto_marca"
+              type="text"
+              x-model.trim="form.marca"
+              maxlength="100"
+              placeholder="Marca">
+          </div>
+
+          <div class="form-group">
+            <label for="producto_precio">Precio *</label>
+            <input
+              id="producto_precio"
+              type="number"
+              x-model.number="form.precio"
+              min="0.01"
+              step="0.01"
+              required
+              placeholder="Ejemplo: 35000">
+          </div>
+
+          <div class="form-group">
+            <label for="producto_stock">Stock</label>
+            <input
+              id="producto_stock"
+              type="number"
+              x-model.number="form.stock"
+              min="0"
+              step="1"
+              placeholder="Cantidad disponible">
+          </div>
         </div>
-        <div class="form-group"><label>Descripción</label><textarea x-model="form.descripcion" rows="2" placeholder="Descripción del producto"></textarea></div>
-        <div class="form-group"><label>Categoría</label>
-          <select x-model="form.categoria_id">
-            <option value="">Seleccionar categoría</option>
-            <template x-for="c in categorias" :key="c.id">
-              <option :value="c.id" x-text="c.nombre"></option>
-            </template>
-          </select>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            @click="cerrarModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <span x-text="modoEdicion ? 'Guardar cambios' : 'Registrar producto'"></span>
+          </button>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" @click="cerrarModal()">Cancelar</button>
-        <button class="btn btn-primary" @click="guardar()" x-text="modoEdicion?'Actualizar':'Guardar'"></button>
-      </div>
+      </form>
     </div>
   </div>
 </div>
-<?php require_once __DIR__ . '/../../vistas/layout/footer.php'; ?>
